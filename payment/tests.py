@@ -50,5 +50,6 @@ class TestMakeTransaction(TestCase):
         self.assertEqual(data.get('error'), 'Incorrect password')
 
 
+
     def test_make_payment(self):
         pass
