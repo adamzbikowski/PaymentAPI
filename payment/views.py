@@ -10,6 +10,7 @@ import requests
 
 # Create your views here.
 BANK_URL = 'https://sc19jt.pythonanywhere.com'
+# BANK_URL ='https://sc20wrpf.pythonanywhere.com'
 
 @require_http_methods(['GET'])
 def GetFormFields(request):
@@ -70,6 +71,7 @@ def MakeTransaction(request):
         try:
             payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':bookingID}
             response = requests.post(f'{BANK_URL}/bank/pay', json=payload)
+            print(response)
             data = response.json()
             print(data)
         except:
@@ -136,11 +138,11 @@ def RefundPayment(request):
             return JsonResponse({'status':'failed','error':'Incorrect password'}) 
         
         
-        # try:
-        #     payload = {'BookingID': booking_id}
-        #     response = requests.post(f'{BANK_URL}/refund', json=payload)
-        # except:
-        #     return JsonResponse({'status':'failed','error':'Could not contact bank'})
+        try:
+            payload = {'BookingID': booking_id}
+            response = requests.post(f'{BANK_URL}/refund', json=payload)
+        except:
+            return JsonResponse({'status':'failed','error':'Could not contact bank'})
 
         # refund transaction
         user_id = transaction_object.user_id
