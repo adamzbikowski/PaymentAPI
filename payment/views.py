@@ -68,9 +68,9 @@ def MakeTransaction(request):
         # send request to bank
         try:
             payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':bookingID}
-            # response = requests.post(f'{BANK_URL}/bank/pay', json=payload)
-            # data = response.json()
-            # print(data)
+            response = requests.post(f'{BANK_URL}/bank/pay', json=payload)
+            data = response.json()
+            print(data)
         except:
             return JsonResponse({'status':'failed','error':'Could not contact bank'}) 
 
