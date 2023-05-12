@@ -4,10 +4,9 @@ from .views import GetFormFields
 from .models import User, Transaction, Billing
 
 # Create your tests here.
-URL = 'https://sc20aaz.pythonanywhere.com'
-# URL = 'http://127.0.0.1:8000'
+# URL = 'https://sc20aaz.pythonanywhere.com'
+URL = 'http://127.0.0.1:8000'
 class TestGetFormFields(TestCase):
-
     def test_get_form_fields(self):
         response = requests.get(f'{URL}/payment/form')
         data = response.json()
@@ -26,6 +25,7 @@ class TestMakeTransaction(TestCase):
         
     # three test cases designed to check how the endpoint handles incorrectly formatted payloads
     def test_check_payload(self):
+        print('Empty payload')
         # empty  payload
         payload = {}
         response = requests.post(f'{URL}/payment/pay',json=payload)
@@ -34,6 +34,7 @@ class TestMakeTransaction(TestCase):
         self.assertEqual(data.get('status'), 'failed')
         self.assertEqual(data.get('error'), 'Incorrect payload')
 
+        print('Missing fields')
         # missing fields
         payload = { 'transaction':
                    {'amount':100,'currency':'GBP', 'recipient account':'Emirates', 'bookingID':'21231231'}}
@@ -43,6 +44,7 @@ class TestMakeTransaction(TestCase):
         self.assertEqual(data.get('status'), 'failed')
         self.assertEqual(data.get('error'), 'Incorrect payload')
 
+        print('Missing transaction')
         # missing transaction
         payload = {'fields':{'Username':'azbik314@gmail.com','Password':'hashtest'},
                         }
@@ -56,16 +58,18 @@ class TestMakeTransaction(TestCase):
 
     def test_check_credentials(self):
 
+        print('Email as username')
          # correct credentials usign email as username
         payload = {'fields':{'Username':'azbik314@gmail.com','Password':'hashtest'},
                          'transaction':
-                         {'amount':100,'currency':'GBP', 'recipient account':'Emirates', 'bookingID':'21231231'}}
+                         {'amount':100,'currency':'GBP', 'recipient account':'Emirates', 'bookingID':66}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(response.json())
         self.assertEqual(data.get('status'), 'success')
 
       
+        print('Username does not exist')
         # username does not exist in database
         payload = {'fields':{'Username':'notauser','Password':'wrongpassword'},
                          'transaction':
@@ -76,6 +80,7 @@ class TestMakeTransaction(TestCase):
         self.assertEqual(data.get('status'), 'failed')
         self.assertEqual(data.get('error'), 'User does not exist')
 
+        print('Incorrect password')
         # incorrect password
         payload = {'fields':{'Username':'adam','Password':'wrongpassword'},
                          'transaction':
@@ -90,23 +95,26 @@ class TestMakeTransaction(TestCase):
 
     def test_make_payment(self):
         # correct credentials
+        print('Correct credentials')
         payload = {'fields':{'Username':'adam','Password':'hashtest'},
                          'transaction':
-                         {'amount':100,'currency':'GBP', 'recipient account':'Emirates', 'bookingID':'21231231'}}
+                         {'amount':100,'currency':'GBP', 'recipient account':'Emirates', 'bookingID':21231231}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(response.json())
         self.assertEqual(data.get('status'), 'success')
 
+        print('Correct currency exchange')
         # test payment with currency exchange
         payload = {'fields':{'Username':'adam','Password':'hashtest'},
                          'transaction':
-                         {'amount':100,'currency':'USD', 'recipient account':'Emirates', 'bookingID':'21231231'}}
+                         {'amount':100,'currency':'USD', 'recipient account':'Emirates', 'bookingID':21231231}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(response.json())
         self.assertEqual(data.get('status'), 'success')
 
+        print('Invalid currency')
         # test payment with an invalid currency
         payload = {'fields':{'Username':'adam','Password':'hashtest'},
                          'transaction':

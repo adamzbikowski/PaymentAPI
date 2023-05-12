@@ -24,8 +24,7 @@ def MakeTransaction(request):
         fields = data.get('fields')
         username = fields.get('Username')
         password = fields.get('Password')
-        recipient_account = fields.get('recipient account')
-        bookingID = fields.get('bookingID')
+        
 
         # check if user exists
         user_object = None
@@ -47,6 +46,8 @@ def MakeTransaction(request):
         transaction = data.get('transaction')
         currency = transaction.get('currency')
         amount = transaction.get('amount')
+        recipient_account = transaction.get('recipient account')
+        bookingID = transaction.get('bookingID')
         if currency != 'GBP':
             
             try:
@@ -70,8 +71,11 @@ def MakeTransaction(request):
             # amount = 100
             # recipient_account = 'Emirates'
             # bookingID = 2132
+            print(amount)
+            print(recipient_account)
+            print(bookingID)
 
-            payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':int(bookingID)}
+            payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':bookingID}
             response = requests.post(f'{BANK_URL}/bank/pay', json=payload)
             data = response.json()
             print(data)
