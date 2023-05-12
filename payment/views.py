@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from hashlib import sha256
 from .models import User, Billing, Transaction
 import json
@@ -27,7 +28,7 @@ def MakeTransaction(request):
         # check if user exists
         user_object = None
         try:
-            user_object = User.objects.get(username=username)
+            user_object = User.objects.get(Q(username=username)|Q(email=username))
         except:
             return JsonResponse({'status':'failed','error':'User does not exist'})
 
@@ -96,10 +97,9 @@ def RefundPayment(request):
         booking_id = data.get('BookingID')
 
         try:
-
             pass
         except:
             return JsonResponse({'status':'failed','error':'Transaction does not exist'})
-        return JsonResponse({'status':'success'})
+        return JsonResponse({'status':'success'})  
     except:
         return JsonResponse({'status':'failed','error':'Incorrect payload'})
