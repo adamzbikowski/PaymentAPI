@@ -68,13 +68,6 @@ def MakeTransaction(request):
 
         # send request to bank
         try:
-            # amount = 100
-            # recipient_account = 'Emirates'
-            # bookingID = 2132
-            print(amount)
-            print(recipient_account)
-            print(bookingID)
-
             payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':bookingID}
             response = requests.post(f'{BANK_URL}/bank/pay', json=payload)
             data = response.json()
@@ -106,22 +99,48 @@ def MakeTransaction(request):
 @require_http_methods(['POST'])
 def RefundPayment(request):
     try:
-
+        # load request data
         data = json.loads(request.body)
-        transaction_id = data.get('TransactionID')
-        booking_id = data.get('BookingID')
 
+        # parse form fields
+        fields = data.get('fields')
+        username = fields.get('Username')
+        password = fields.get('Password')
+
+        # check if user exists
+        user_object = None
+        try:
+            user_object = User.objects.get(Q(username=username)|Q(email=username))
+        except:
+            return JsonResponse({'status':'failed','error':'User does not exist'})
+
+        # parse transaction details
+        transaction = data.get('transaction')
+        transaction_id = transaction.get('TransactionID')
+        booking_id = transaction.get('BookingID')
+
+        # check if user exists
         transaction_object = None
         try:
             transaction_object = Transaction.objects.get(transaction_id=transaction_id)
         except:
             return JsonResponse({'status':'failed','error':'Invalid transaction id'})
         
-        # contact bank
-        try:
-            pass
-        except:
-            return JsonResponse({'status':'failed','error':'Could not contact bank'})
+        # authenticate user
+        salt = user_object.salt
+        password_bytes = bytes(f'{password}{salt}','utf-8')
+        password_hash = sha256(password_bytes).hexdigest()
+    
+        if password_hash != user_object.password:
+            # print('incorrect password')
+            return JsonResponse({'status':'failed','error':'Incorrect password'}) 
+        
+        
+        # try:
+        #     payload = {'BookingID': booking_id}
+        #     response = requests.post(f'{BANK_URL}/refund', json=payload)
+        # except:
+        #     return JsonResponse({'status':'failed','error':'Could not contact bank'})
 
         # refund transaction
         user_id = transaction_object.user_id
