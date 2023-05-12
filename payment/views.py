@@ -139,7 +139,7 @@ def RefundPayment(request):
         
         
         try:
-            payload = {'BookingID': booking_id}
+            payload = {'bookingID': booking_id}
             response = requests.post(f'{BANK_URL}/refund', json=payload)
         except:
             return JsonResponse({'status':'failed','error':'Could not contact bank'})
