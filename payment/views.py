@@ -46,7 +46,7 @@ def MakeTransaction(request):
         transaction = data.get('transaction')
         currency = transaction.get('currency')
         amount = transaction.get('amount')
-        recipient_account = transaction.get('recipient account')
+        recipient_account = transaction.get('recipientAccount')
         bookingID = transaction.get('bookingID')
         if currency != 'GBP':
             
@@ -118,7 +118,10 @@ def RefundPayment(request):
             return JsonResponse({'status':'failed','error':'Invalid transaction id'})
         
         # contact bank
-
+        try:
+            pass
+        except:
+            return JsonResponse({'status':'failed','error':'Could not contact bank'})
 
         # refund transaction
         user_id = transaction_object.user_id
