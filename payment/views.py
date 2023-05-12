@@ -117,9 +117,9 @@ def RefundPayment(request):
             return JsonResponse({'status':'failed','error':'User does not exist'})
 
         # parse transaction details
-        transaction = data.get('transaction')
-        transaction_id = transaction.get('TransactionID')
-        booking_id = transaction.get('BookingID')
+        # transaction = data.get('transaction')
+        transaction_id = data.get('TransactionID')
+        booking_id = data.get('BookingID')
 
         # check if user exists
         transaction_object = None
