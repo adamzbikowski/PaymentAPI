@@ -20,7 +20,7 @@ from payment.views import GetFormFields, MakeTransaction, RefundPayment
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('payment/form', GetFormFields),
-    path('payment/pay', MakeTransaction),
-    path('payment/refund', RefundPayment)
+    path('payments/form', GetFormFields),
+    path('payments/pay', MakeTransaction),
+    path('payments/refund', RefundPayment)
 ]
