@@ -67,13 +67,11 @@ def MakeTransaction(request):
 
         # send request to bank
         try:
-            # payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':bookingID}
-            # response = requests.post(f'{BANK_URL}/bank/pay', json=payload)
-            amount = 100
-            recipient_account = 'Emirates'
-            bookingID = 2132
+            # amount = 100
+            # recipient_account = 'Emirates'
+            # bookingID = 2132
 
-            payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':bookingID}
+            payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':int(bookingID)}
             response = requests.post(f'{BANK_URL}/bank/pay', json=payload)
             data = response.json()
             print(data)
