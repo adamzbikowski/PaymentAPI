@@ -19,11 +19,13 @@ def GetFormFields(request):
 @require_http_methods(['POST'])
 def MakeTransaction(request):
     try:
+        # parse payload
         data = json.loads(request.body)
         fields = data.get('fields')
         username = fields.get('Username')
         password = fields.get('Password')
         recipient_account = fields.get('recipient account')
+        bookingID = fields.get('bookingID')
 
         # check if user exists
         user_object = None
@@ -65,7 +67,7 @@ def MakeTransaction(request):
 
         # send request to bank
         try:
-            payload = {'amount':amount, 'companyName':recipient_account}
+            payload = {'amount':amount, 'companyName':recipient_account, 'bookingID':bookingID}
             # response = requests.post(f'{BANK_URL}/bank/pay', json=payload)
             # data = response.json()
             # print(data)

@@ -36,7 +36,7 @@ class TestMakeTransaction(TestCase):
 
         # missing fields
         payload = { 'transaction':
-                   {'amount':100,'currency':'GBP', 'recipient account':'airline', 'reference':'21231231'}}
+                   {'amount':100,'currency':'GBP', 'recipient account':'airline', 'bookingID':'21231231'}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(data)
@@ -59,7 +59,7 @@ class TestMakeTransaction(TestCase):
          # correct credentials usign email as username
         payload = {'fields':{'Username':'azbik314@gmail.com','Password':'hashtest'},
                          'transaction':
-                         {'amount':100,'currency':'GBP', 'recipient account':'airline', 'reference':'21231231'}}
+                         {'amount':100,'currency':'GBP', 'recipient account':'airline', 'bookingID':'21231231'}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(response.json())
@@ -69,7 +69,7 @@ class TestMakeTransaction(TestCase):
         # username does not exist in database
         payload = {'fields':{'Username':'notauser','Password':'wrongpassword'},
                          'transaction':
-                         {'amount':100,'currency':'GBP', 'recipient account':'airline', 'reference':'21231231'}}
+                         {'amount':100,'currency':'GBP', 'recipient account':'airline', 'bookingID':'21231231'}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(data)
@@ -79,7 +79,7 @@ class TestMakeTransaction(TestCase):
         # incorrect password
         payload = {'fields':{'Username':'adam','Password':'wrongpassword'},
                          'transaction':
-                         {'amount':100,'currency':'GBP', 'recipient account':'airline', 'reference':'21231231'}}
+                         {'amount':100,'currency':'GBP', 'recipient account':'airline', 'bookingID':'21231231'}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(data)
@@ -92,7 +92,7 @@ class TestMakeTransaction(TestCase):
         # correct credentials
         payload = {'fields':{'Username':'adam','Password':'hashtest'},
                          'transaction':
-                         {'amount':100,'currency':'GBP', 'recipient account':'airline', 'reference':'21231231'}}
+                         {'amount':100,'currency':'GBP', 'recipient account':'airline', 'bookingID':'21231231'}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(response.json())
@@ -101,13 +101,23 @@ class TestMakeTransaction(TestCase):
         # test payment with currency exchange
         payload = {'fields':{'Username':'adam','Password':'hashtest'},
                          'transaction':
-                         {'amount':100,'currency':'USD', 'recipient account':'airline', 'reference':'21231231'}}
+                         {'amount':100,'currency':'USD', 'recipient account':'airline', 'bookingID':'21231231'}}
         response = requests.post(f'{URL}/payment/pay',json=payload)
         data = response.json()
         print(response.json())
         self.assertEqual(data.get('status'), 'success')
 
+        # test payment with an invalid currency
+        payload = {'fields':{'Username':'adam','Password':'hashtest'},
+                         'transaction':
+                         {'amount':100,'currency':'ETH', 'recipient account':'airline', 'bookingID':'21231231'}}
+        response = requests.post(f'{URL}/payment/pay',json=payload)
+        data = response.json()
+        print(response.json())
+        self.assertEqual(data.get('status'), 'failed')
+
         
 
 class TestRefundTransaction(TestCase):
-    pass
+    def test_make_refund(sefl):
+        pass
