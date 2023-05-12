@@ -34,7 +34,6 @@ def MakeTransaction(request):
 
         # authenticate user
         salt = user_object.salt
-        # print(salt)
         password_bytes = bytes(f'{password}{salt}','utf-8')
         password_hash = sha256(password_bytes).hexdigest()
     
@@ -50,7 +49,11 @@ def MakeTransaction(request):
             
             try:
                 response = requests.get(f'{BANK_URL}/bank/exchange/{currency}/{amount}')
-                print(response)
+                data = response.json()
+                try:
+                    amount = data.get('convertedAmount')
+                except:
+                    return JsonResponse({'status':'failed', 'error':'Failed to convert currency'})    
             except:
                 # return JsonResponse(response)
                 return JsonResponse({'status':'failed','error':'Could not contact bank'}) 
@@ -81,6 +84,8 @@ def MakeTransaction(request):
                         confirmed=True,
                         recipient_id=1)
         t.save()
+        
+        # return success and transaction_id
         transaction_id = t.transaction_id
         return JsonResponse({'status':'success', 'TransactionID':transaction_id})
     except:
@@ -96,10 +101,25 @@ def RefundPayment(request):
         transaction_id = data.get('TransactionID')
         booking_id = data.get('BookingID')
 
+        transaction_object = None
         try:
-            pass
+            transaction_object = Transaction.objects.get(transaction_id=transaction_id)
         except:
-            return JsonResponse({'status':'failed','error':'Transaction does not exist'})
+            return JsonResponse({'status':'failed','error':'Invalid transaction id'})
+        
+        # contact bank
+
+
+        # refund transaction
+        user_id = transaction_object.user_id
+        user_object = User.objects.get(user_id=user_id)
+        refund_amount = transaction_object.amount      
+        user_object.balance += refund_amount
+        user_object.save()
+
+        # remove transaction object from database
+        transaction_object.delete()
+
         return JsonResponse({'status':'success'})  
     except:
         return JsonResponse({'status':'failed','error':'Incorrect payload'})
